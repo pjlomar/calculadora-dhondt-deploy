@@ -1,26 +1,45 @@
-# backend/db.py
+# backend/db.py  (VERSIÓN DEPLOY: usa SQLite en lugar de MySQL)
 
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+from pathlib import Path
 
-# Configuración básica para conectarse a MySQL (XAMPP).
-# Aquí indico host, usuario y el nombre de la base de datos.
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",      # usuario típico por defecto en XAMPP
-    "password": "",      # si root no tiene contraseña, se deja vacío
-    "database": "dhondt" # nombre de la base de datos del proyecto
-}
+BASE_DIR = Path(__file__).resolve().parent.parent
+DB_PATH = BASE_DIR / "dhondt.sqlite3"
 
 
 def get_connection():
+    """Devuelve una conexión a la BD SQLite."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
     """
-    Abre y devuelve una conexión a MySQL usando la configuración anterior.
-    Si hay algún problema, se imprime el error y se vuelve a lanzar la excepción.
+    Crea las tablas necesarias si no existen.
+    Versión mínima para registro/login y simulaciones.
     """
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        return conn
-    except Error as e:
-        print("Error conectando a MySQL:", e)
-        raise
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS simulaciones (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            nombre TEXT NOT NULL,
+            datos_json TEXT NOT NULL,
+            fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        )
+    """)
+
+    conn.commit()
+    conn.close()

@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Hoja de estilos propia del proyecto -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
@@ -36,13 +36,11 @@
 
                 <!-- Vista cuando el usuario NO está autenticado -->
                 <div id="logged_out_view" class="d-flex align-items-center gap-2">
-                    <input id="auth_username" type="text"
-                           class="form-control form-control-sm login-input"
-                           placeholder="Usuario">
+                    <input id="auth_username" type="text" class="form-control form-control-sm login-input"
+                        placeholder="Usuario">
 
-                    <input id="auth_password" type="password"
-                           class="form-control form-control-sm login-input"
-                           placeholder="Contraseña">
+                    <input id="auth_password" type="password" class="form-control form-control-sm login-input"
+                        placeholder="Contraseña">
 
                     <!-- Botones para iniciar sesión o registrarse -->
                     <button class="btn btn-light btn-sm" onclick="doLogin()">Entrar</button>
@@ -82,7 +80,7 @@
                         <div class="mb-3">
                             <label for="nombre_simulacion" class="form-label">Nombre de la simulación</label>
                             <input type="text" class="form-control" id="nombre_simulacion"
-                                   placeholder="Ej: Municipales 2023 La Unión">
+                                placeholder="Ej: Municipales 2023 La Unión">
                         </div>
 
                         <!-- Número total de escaños -->
@@ -137,17 +135,20 @@
                                     <tr>
                                         <td><input type="text" class="form-control" value="A"></td>
                                         <td><input type="number" class="form-control" value="34000"></td>
-                                        <td><input type="color" class="form-control form-control-color" value="#1f979a"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#1f979a">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="form-control" value="B"></td>
                                         <td><input type="number" class="form-control" value="28000"></td>
-                                        <td><input type="color" class="form-control form-control-color" value="#e67e22"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#e67e22">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="form-control" value="C"></td>
                                         <td><input type="number" class="form-control" value="16000"></td>
-                                        <td><input type="color" class="form-control form-control-color" value="#9b59b6"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#9b59b6">
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -172,7 +173,7 @@
                                 Guardar simulación
                             </button>
                             <button id="btn_ver_simulaciones" class="btn btn-brand-outline"
-                                    onclick="toggleSimulaciones()">
+                                onclick="toggleSimulaciones()">
                                 Ver simulaciones guardadas
                             </button>
                         </div>
@@ -299,7 +300,7 @@
          ================================================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="app.js"></script>
+    <script src="/static/app.js"></script>
 
 </body>
 

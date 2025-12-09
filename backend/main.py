@@ -1,4 +1,7 @@
 # backend/main.py
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,12 +10,15 @@ from typing import List, Tuple
 from datetime import datetime
 import json
 import hashlib
+from db import get_connection, init_db
 
 # Importo la función que hace el cálculo D'Hondt
 from dhondt import dhondt
 # Importo la función que abre la conexión con MySQL
 from db import get_connection
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
 
 # ============================================================
 # UTILIDADES DE SEGURIDAD (HASH DE CONTRASEÑAS)
@@ -305,6 +311,19 @@ app = FastAPI(
     description="Backend para calcular reparto de escaños con el método D'Hondt",
     version="0.1.0"
 )
+# Servir archivos estáticos (CSS, JS, imágenes)
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def servir_index():
+    """Devuelve la página principal (index.html)."""
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+# Inicializar BD al arrancar el servidor
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 # Configuro CORS para poder llamar a la API desde el frontend (otro puerto)
 app.add_middleware(

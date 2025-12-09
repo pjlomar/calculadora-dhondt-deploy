@@ -3,7 +3,8 @@
 // =========================
 
 // URL base de la API (FastAPI)
-const API_URL = "http://127.0.0.1:8000";
+// En despliegue usamos rutas relativas: mismo dominio / misma URL
+const API_URL = "";
 // Color por defecto para los partidos si no se elige ninguno
 const DEFAULT_PARTY_COLOR = "#1f979a";
 
