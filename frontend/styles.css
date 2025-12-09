@@ -1,0 +1,201 @@
+/* ======================================================
+   PALETA DE COLORES / VARIABLES
+   Aquí defino los colores principales de la “marca”
+   para poder reutilizarlos en todo el CSS.
+   ====================================================== */
+:root {
+    --brand-color: #1F979A;       /* Color principal (fondos y botones) */
+    --brand-dark: #0b5a60;        /* Versión oscura para hover/activo */
+    --brand-text-dark: #123036;   /* Color para títulos y textos destacados */
+}
+
+
+/* ======================================================
+   ESTILOS GENERALES
+   Aspecto base de la página y componentes comunes.
+   ====================================================== */
+
+body {
+    background-color: #f5f7f9;    /* Fondo gris claro para diferenciar las tarjetas */
+}
+
+.card {
+    border-radius: 0.75rem;       /* Esquinas redondeadas en las tarjetas */
+}
+
+.text-brand-dark {
+    color: var(--brand-text-dark); /* Clase auxiliar para textos importantes */
+}
+
+
+/* ======================================================
+   HEADER & FOOTER
+   Estilos de la cabecera y el pie de página.
+   ====================================================== */
+
+.bg-brand {
+    background-color: var(--brand-color) !important; /* Fondo principal del header/footer */
+}
+
+.header-logo {
+    border-radius: 50%;                           /* Hago el logo circular */
+    border: 2px solid rgba(255, 255, 255, 0.7);   /* Borde blanco semitransparente */
+}
+
+.header-subtitle {
+    margin-top: 0.15rem;
+    opacity: 0.9;                                 /* Un poco más suave que el título */
+}
+
+.footer-link {
+    color: #f3f9fa;
+    text-decoration: underline;                   /* Enlace visible sobre fondo oscuro */
+}
+.footer-link:hover {
+    color: #ffffff;                               /* Más blanco al pasar el ratón */
+}
+
+
+/* ======================================================
+   BOTONES PERSONALIZADOS
+   Variantes de botón con el color de la marca.
+   ====================================================== */
+
+.btn-brand {
+    background-color: var(--brand-color);
+    border-color: var(--brand-color);
+    color: #fff;
+}
+.btn-brand:hover {
+    background-color: var(--brand-dark);          /* En hover uso el tono más oscuro */
+    border-color: var(--brand-dark);
+    color: #fff;
+}
+
+.btn-brand-outline {
+    background-color: transparent;
+    border-color: var(--brand-color);
+    color: var(--brand-color);
+}
+.btn-brand-outline:hover {
+    background-color: var(--brand-color);         /* En hover pasa a botón “relleno” */
+    color: #fff;
+}
+
+
+/* ======================================================
+   TABLAS
+   Cabeceras con color de marca y alineación vertical.
+   ====================================================== */
+
+#tabla_partidos th,
+#tabla_resultado th,
+#lista_simulaciones table th {
+    background-color: var(--brand-color); /* Cabecera con fondo corporativo */
+    color: #fff;
+}
+
+#tabla_partidos td,
+#tabla_resultado td {
+    vertical-align: middle;               /* Centra el contenido verticalmente */
+}
+
+
+/* ======================================================
+   VALIDACIÓN
+   Aspecto de los inputs marcados como inválidos.
+   ====================================================== */
+
+input.is-invalid {
+    border-color: #dc3545 !important;             /* Borde rojo (estilo Bootstrap error) */
+    box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.25); /* Sombra roja suave alrededor */
+}
+
+
+/* ======================================================
+   BLOQUE SIMULACIONES DESHABILITADO
+   Cuando el usuario no está logueado se aplica este estilo.
+   ====================================================== */
+
+.bloqueado {
+    opacity: 0.5;           /* Mitad de opacidad para indicar “bloqueado” */
+    filter: grayscale(0.3); /* Un poco en gris para reforzar la idea */
+    pointer-events: none;   /* Desactiva los clics dentro del bloque */
+}
+
+
+/* ======================================================
+   PACTÓMETRO
+   Barra horizontal que muestra el avance del pacto.
+   ====================================================== */
+
+.pacto-bar-wrapper {
+    max-width: 500px;       /* Ancho máximo de la barra */
+    margin: 0 auto;         /* Centrada horizontalmente */
+}
+
+.pacto-bar-background {
+    position: relative;
+    height: 22px;
+    border-radius: 11px;    /* Bordes redondeados (forma de píldora) */
+    background: #e9ecef;    /* Fondo gris claro */
+    overflow: hidden;       /* Oculta el relleno que se salga */
+}
+
+.pacto-bar-fill {
+    position: absolute;
+    inset: 0;               /* Ocupa todo el alto de la barra */
+    width: 0;               /* Se irá actualizando con JS según escaños del pacto */
+    border-radius: 11px;
+    background: var(--brand-color);
+    transition: width 0.25s ease; /* Animación suave al cambiar la anchura */
+}
+
+.pacto-bar-fill.mayoria {
+    background: #198754;    /* Verde (Bootstrap success) cuando hay mayoría absoluta */
+}
+
+.pacto-bar-majoria {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    background: #343a40;    /* Línea vertical que marca la mayoría absoluta */
+}
+
+
+/* ======================================================
+   HEMICICLO
+   Contenedor para el gráfico semicircular de Chart.js.
+   ====================================================== */
+
+.hemiciclo-wrapper {
+    max-width: 480px;
+    margin: 0 auto;         /* Centra el hemiciclo */
+}
+
+#hemicicloCanvas {
+    width: 100% !important; /* El canvas ocupa el ancho disponible del contenedor */
+    height: auto !important;/* Mantiene la proporción del hemiciclo */
+}
+
+
+/* ======================================================
+   LOGIN EN HEADER
+   Ajustes para el formulario de login compacto.
+   ====================================================== */
+
+.login-compact {
+    white-space: nowrap;    /* Evita saltos de línea entre los campos y botones */
+}
+
+.login-input {
+    width: 130px;           /* Ancho fijo para que quepan en el header sin romperlo */
+}
+
+/* Ajuste opcional para móviles pequeños */
+@media (max-width: 400px) {
+    .login-input {
+        width: 100px;       /* En pantallas muy estrechas reduzco un poco el ancho */
+    }
+}

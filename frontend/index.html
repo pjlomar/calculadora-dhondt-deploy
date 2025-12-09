@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Hacemos la página responsiva en móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Calculadora Electoral Ley D'Hondt</title>
+
+    <!-- Bootstrap desde CDN para el maquetado y estilos base -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Hoja de estilos propia del proyecto -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ==================================================
+         HEADER: logo, título y bloque de login/registro
+         ================================================== -->
+    <header class="bg-brand text-white py-3 mb-4">
+        <div class="container d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+
+            <!-- Zona izquierda: logo + título de la aplicación -->
+            <div class="d-flex align-items-center">
+                <img src="logo.svg" alt="Logo del proyecto" width="55" height="55" class="me-3 header-logo">
+                <div>
+                    <h1 class="h3 mb-0">Calculadora Electoral Ley D'Hondt</h1>
+                </div>
+            </div>
+
+            <!-- Zona derecha: formulario de login integrado en el header -->
+            <div class="login-compact d-flex align-items-center gap-2">
+
+                <!-- Vista cuando el usuario NO está autenticado -->
+                <div id="logged_out_view" class="d-flex align-items-center gap-2">
+                    <input id="auth_username" type="text"
+                           class="form-control form-control-sm login-input"
+                           placeholder="Usuario">
+
+                    <input id="auth_password" type="password"
+                           class="form-control form-control-sm login-input"
+                           placeholder="Contraseña">
+
+                    <!-- Botones para iniciar sesión o registrarse -->
+                    <button class="btn btn-light btn-sm" onclick="doLogin()">Entrar</button>
+                    <button class="btn btn-outline-light btn-sm" onclick="doRegister()">Registro</button>
+                </div>
+
+                <!-- Vista cuando el usuario SÍ está autenticado -->
+                <div id="logged_in_view" class="d-none d-flex align-items-center gap-2">
+                    <!-- Aquí muestro el nombre de usuario logueado -->
+                    <span class="small" id="logged_in_email"></span>
+                    <button class="btn btn-outline-light btn-sm" onclick="doLogout()">Salir</button>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================================================
+         CONTENIDO PRINCIPAL
+         Dos columnas: configuración y resultados
+         ================================================== -->
+    <main class="container mb-4">
+
+        <div class="row mb-4">
+
+            <!-- ===========================================
+                 COLUMNA IZQUIERDA: Configuración de entrada
+                 =========================================== -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h2 class="h5 mb-3 text-brand-dark">Configuración de la simulación</h2>
+
+                        <!-- Nombre opcional de la simulación (obligatorio al guardar) -->
+                        <div class="mb-3">
+                            <label for="nombre_simulacion" class="form-label">Nombre de la simulación</label>
+                            <input type="text" class="form-control" id="nombre_simulacion"
+                                   placeholder="Ej: Municipales 2023 La Unión">
+                        </div>
+
+                        <!-- Número total de escaños -->
+                        <div class="mb-3">
+                            <label for="num_escanos" class="form-label">Número de escaños</label>
+                            <input type="number" class="form-control" id="num_escanos" value="7" min="1">
+                        </div>
+
+                        <!-- Votos en blanco y nulos, en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="votos_blanco" class="form-label">Votos en blanco</label>
+                                    <input type="number" class="form-control" id="votos_blanco" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="votos_nulos" class="form-label">Votos nulos</label>
+                                    <input type="number" class="form-control" id="votos_nulos" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Umbral electoral sobre votos válidos -->
+                        <div class="mb-3">
+                            <label for="umbral" class="form-label">Umbral mínimo (%)</label>
+                            <input type="number" class="form-control" id="umbral" value="0" min="0" max="100">
+                            <div class="form-text">
+                                Se aplica sobre votos válidos (partidos + blancos).
+                                Los votos nulos no cuentan.
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Tabla editable con los partidos -->
+                        <h3 class="h6 mb-2 text-brand-dark">Partidos y votos</h3>
+                        <p class="small text-muted">Introduce el nombre y votos por partido.</p>
+
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered table-sm align-middle" id="tabla_partidos">
+                                <thead>
+                                    <tr>
+                                        <th>Partido</th>
+                                        <th>Votos</th>
+                                        <th>Color</th>
+                                    </tr>
+                                </thead>
+                                <!-- Cuerpo inicial de la tabla, editable por el usuario -->
+                                <tbody id="tbody_partidos">
+                                    <tr>
+                                        <td><input type="text" class="form-control" value="A"></td>
+                                        <td><input type="number" class="form-control" value="34000"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#1f979a"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" class="form-control" value="B"></td>
+                                        <td><input type="number" class="form-control" value="28000"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#e67e22"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" class="form-control" value="C"></td>
+                                        <td><input type="number" class="form-control" value="16000"></td>
+                                        <td><input type="color" class="form-control form-control-color" value="#9b59b6"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Botones para añadir o quitar filas de partidos -->
+                        <div class="mb-3 d-flex gap-2">
+                            <button class="btn btn-sm btn-brand-outline" onclick="addPartidoRow()">
+                                Añadir partido
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeLastPartidoRow()">
+                                Quitar último
+                            </button>
+                        </div>
+
+                        <!-- Botones principales de acción sobre la simulación -->
+                        <div class="d-flex flex-wrap gap-2">
+                            <button id="btn_calcular" class="btn btn-brand" onclick="calcular()">
+                                Calcular
+                            </button>
+                            <button id="btn_guardar_simulacion" class="btn btn-success" onclick="guardarSimulacion()">
+                                Guardar simulación
+                            </button>
+                            <button id="btn_ver_simulaciones" class="btn btn-brand-outline"
+                                    onclick="toggleSimulaciones()">
+                                Ver simulaciones guardadas
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===========================================
+                 COLUMNA DERECHA: resultados y visualización
+                 =========================================== -->
+            <div class="col-md-6 mt-4 mt-md-0">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h2 class="h5 mb-3 text-brand-dark">Resultado del reparto</h2>
+
+                        <!-- Aquí muestro un resumen tipo "Número total de escaños: X" -->
+                        <p id="info_escanos" class="fw-semibold"></p>
+
+                        <!-- Tabla de resultados, se rellena dinámicamente desde JS -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm align-middle" id="tabla_resultado">
+                                <tr>
+                                    <th>Partido</th>
+                                    <th>Votos</th>
+                                    <th>Escaños</th>
+                                    <th>Color</th>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Hemiciclo (gráfico tipo doughnut con Chart.js) -->
+                        <div class="mt-4 text-center">
+                            <h3 class="h6 text-brand-dark">Representación del parlamento</h3>
+                            <div class="hemiciclo-wrapper mx-auto">
+                                <canvas id="hemicicloCanvas"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bloque del pactómetro debajo de la tarjeta de resultados -->
+                    <div class="mt-4">
+                        <h3 class="h6 text-brand-dark text-center">Pactómetro</h3>
+                        <p class="small text-muted text-center mb-2">
+                            Marca los partidos que forman pacto.
+                        </p>
+
+                        <!-- Aquí se crean checkboxes para cada partido con escaños -->
+                        <div id="pacto_partidos" class="d-flex flex-wrap gap-2 justify-content-center mb-3"></div>
+
+                        <!-- Barra horizontal que muestra el avance del pacto -->
+                        <div class="pacto-bar-wrapper">
+                            <div class="pacto-bar-background">
+                                <div class="pacto-bar-fill" id="pacto_bar_fill"></div>
+                                <div class="pacto-bar-majoria" id="pacto_bar_majoria"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1 small">
+                                <span id="pacto_escanos_texto"></span>
+                                <span id="pacto_mayoria_texto"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen numérico de votos válidos, emitidos, umbral, etc. -->
+                    <div class="mt-3">
+                        <h3 class="h6 text-brand-dark">Resumen de votos</h3>
+                        <p class="small mb-1" id="resumen_votos_linea1"></p>
+                        <p class="small mb-0" id="resumen_votos_linea2"></p>
+                    </div>
+
+                    <p class="small text-muted mb-0">
+                        El reparto se calcula aplicando el método D'Hondt.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================================================
+             BLOQUE INFERIOR: listado de simulaciones guardadas
+             ================================================== -->
+        <div class="row">
+            <div class="col-12">
+                <div id="bloque_simulaciones" class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3 text-brand-dark">Simulaciones guardadas</h2>
+                        <p class="small text-muted">
+                            Pulsa en "Ver simulaciones guardadas" para cargar la lista desde la base de datos.
+                            Podrás cargar cualquiera de ellas para volver a verla o modificarla.
+                        </p>
+
+                        <!-- Aquí el JS pinta la tabla de simulaciones o mensajes -->
+                        <div id="lista_simulaciones">
+                            <p class="text-muted">Inicia sesión para ver tus simulaciones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================================================
+         FOOTER: información y licencia del proyecto
+         ================================================== -->
+    <footer class="bg-brand text-white text-center py-3 mt-auto">
+        <p class="mb-1">&copy; 2025 Calculadora Electoral Ley D'Hondt</p>
+        <div class="d-flex justify-content-center align-items-center gap-2">
+            <img src="cc-by-sa.svg" alt="Licencia CC-BY-SA 4.0" width="90">
+            <p class="small m-0">
+                Distribuido bajo licencia
+                <a class="footer-link" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                    CC BY-SA 4.0
+                </a>.
+            </p>
+        </div>
+    </footer>
+
+    <!-- ==================================================
+         SCRIPTS: Bootstrap, Chart.js y JS propio (app.js)
+         ================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>
